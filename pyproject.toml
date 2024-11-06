@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Automation tools for itch.io game management"
 authors = ["Ben Rog-Wilhelm <zorba-github@pavlovian.net>"]
 readme = "README.md"
+license = "MIT"
+repository = "https://github.com/zorbathut/itch-majordomo"
 packages = [{include = "itch_majordomo", from = "src"}]
 
 [tool.poetry.dependencies]

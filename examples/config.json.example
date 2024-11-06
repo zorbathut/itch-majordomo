@@ -1,6 +1,6 @@
 {
     "game_id": "12345678",
-    "itchio_cookie": "your_cookie_value_here",
+    "itchio_cookie": "your_itchio_cookie_value_here",
     "display_names": {
         "project-megahorse-linux.zip": "project-megahorse-v0.2.3-linux.zip",
         "project-megahorse-windows.zip": "project-megahorse-v0.2.3-windows.zip"

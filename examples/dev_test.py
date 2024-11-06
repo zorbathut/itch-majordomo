@@ -1,4 +1,4 @@
-"""Development testing script - not included in package distribution"""
+
 import json
 import os
 from itch_majordomo import ItchMajordomo
