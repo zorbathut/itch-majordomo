@@ -1,3 +1,2 @@
-/config.json
-/itch_automation.log
-/*.html
+config.json
+__pycache__
