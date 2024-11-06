@@ -42,6 +42,58 @@ class ItchAutomation:
         self.driver.get(url)
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
+    def update_display_names(self, name_mappings: dict):
+        """
+        Update display names based on filename mappings.
+        Args:
+            name_mappings: Dict mapping upload_fname to desired display_name
+        """
+        uploaders = self.driver.find_elements(By.CLASS_NAME, "uploader")
+        self.logger.info(f"Found {len(uploaders)} upload entries")
+        
+        for uploader in uploaders:
+            # Find the filename element
+            fname_elem = uploader.find_element(By.CLASS_NAME, "upload_fname")
+            filename = fname_elem.text
+            
+            if filename in name_mappings:
+                # Find the hidden input for display_name
+                display_input = uploader.find_element(By.CSS_SELECTOR, 'input[name$="[display_name]"]')
+                
+                # Update the display name
+                new_name = name_mappings[filename]
+                self.driver.execute_script(
+                    'arguments[0].value = arguments[1]',
+                    display_input,
+                    new_name
+                )
+                self.logger.info(f"Updated {filename} display name to {new_name}")
+
+    def save_changes(self, timeout: int = 30):
+        """
+        Click the save button and wait for save confirmation.
+        Args:
+            timeout: How long to wait for save confirmation in seconds
+        Returns:
+            bool: True if save was confirmed, False if timeout
+        """
+        save_btn = self.driver.find_element(By.CLASS_NAME, "save_btn")
+        save_btn.click()
+        self.logger.info("Clicked save button")
+        
+        # Wait for either success or error message
+        wait = WebDriverWait(self.driver, timeout)
+        wait.until(lambda driver: 
+            any(msg.is_displayed() for msg in driver.find_elements(By.CLASS_NAME, "global_flash"))
+        )
+        
+        # Check if it was successful
+        messages = self.driver.find_elements(By.CLASS_NAME, "global_flash")
+        for msg in messages:
+            if msg.is_displayed():
+                self.logger.info(f"Save result: {msg.text}")
+                return "saved" in msg.text.lower()
+
     def cleanup(self):
         if self.driver:
             self.driver.quit()
@@ -53,6 +105,15 @@ def main():
         automation.navigate_to_edit_page()
 
         print(automation.driver.page_source)
+
+        # Example usage:
+        name_mappings = {
+            "project-tsoh-linux.zip": "project-tsoh-linux-test2.zip",
+            "project-tsoh-windows.zip": "project-tsoh-windows-test2.zip"
+        }
+        
+        automation.update_display_names(name_mappings)
+        automation.save_changes()
         
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
